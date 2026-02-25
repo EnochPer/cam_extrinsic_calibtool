@@ -136,8 +136,8 @@ void CameraCalibratorNode::process_data() {
       if (solve_pnp(corners, T_cam_board)) {
         // T_robot_cam = T_robot_board * T_cam_board^-1
         Eigen::Affine3d T_robot_cam = T_robot_board * T_cam_board.inverse();
-        valid_poses.push_back(T_robot_cam);
-        RCLCPP_INFO(this->get_logger(), "Frame %s: Valid pose found.",
+        save_result(T_robot_cam, filename);
+        RCLCPP_INFO(this->get_logger(), "Frame %s: Valid pose found and saved.",
                     filename.c_str());
       } else {
         RCLCPP_WARN(this->get_logger(), "Frame %s: PnP failed.",
@@ -148,14 +148,6 @@ void CameraCalibratorNode::process_data() {
                   filename.c_str());
     }
   }
-
-  if (valid_poses.empty()) {
-    RCLCPP_ERROR(this->get_logger(), "No valid poses found!");
-    return;
-  }
-
-  Eigen::Affine3d final_pose = compute_average_pose(valid_poses);
-  save_result(final_pose);
 }
 
 bool CameraCalibratorNode::detect_corners(const cv::Mat& image,
@@ -218,36 +210,8 @@ bool CameraCalibratorNode::solve_pnp(const std::vector<cv::Point2f>& corners,
   return true;
 }
 
-Eigen::Affine3d CameraCalibratorNode::compute_average_pose(
-    const std::vector<Eigen::Affine3d>& poses) {
-  Eigen::Vector3d avg_translation = Eigen::Vector3d::Zero();
-  // Simple averaging for translation
-  for (const auto& pose : poses) {
-    avg_translation += pose.translation();
-  }
-  avg_translation /= poses.size();
-
-  // Averaging quaternions is tricky, but for small variations,
-  // normalizing the sum is a reasonable approximation or using Slerp
-  // iteratively. Here we use a simple sum and normalize approach which works
-  // for clustered rotations.
-  Eigen::Quaterniond avg_quat(0, 0, 0, 0);
-  // Use the first quaternion as reference to avoid sign flipping issues
-  Eigen::Quaterniond ref_quat(poses[0].rotation());
-
-  for (const auto& pose : poses) {
-    Eigen::Quaterniond q(pose.rotation());
-    if (q.dot(ref_quat) < 0.0) {
-      q.coeffs() = -q.coeffs();
-    }
-    avg_quat.coeffs() += q.coeffs();
-  }
-  avg_quat.normalize();
-
-  return Eigen::Translation3d(avg_translation) * avg_quat;
-}
-
-void CameraCalibratorNode::save_result(const Eigen::Affine3d& T_robot_cam) {
+void CameraCalibratorNode::save_result(const Eigen::Affine3d& T_robot_cam,
+                                       const std::string& filename) {
   Eigen::Vector3d t = T_robot_cam.translation();
   Eigen::Matrix3d R = T_robot_cam.rotation();
   // ZYX order: Z(yaw) * Y(pitch) * X(roll)
@@ -302,16 +266,19 @@ void CameraCalibratorNode::save_result(const Eigen::Affine3d& T_robot_cam) {
   out << YAML::EndMap;
   out << YAML::EndMap;
 
-  std::ofstream fout(config_.output_file);
-  fout << out.c_str();
-  RCLCPP_INFO(this->get_logger(), "Calibration saved to %s",
-              config_.output_file.c_str());
+  namespace fs = std::filesystem;
+  fs::path output_path = fs::path(config_.output_file).parent_path();
+  if (!fs::exists(output_path)) {
+    fs::create_directories(output_path);
+  }
 
-  // Print to console
-  std::cout << "Final Result (T_robot_cam):\n"
-            << "Translation (x, y, z): " << t.transpose() << "\n"
-            << "Euler Angles (deg) [Roll, Pitch, Yaw]: " << roll_deg << ", "
-            << pitch_deg << ", " << yaw_deg << std::endl;
+  // Replace extension with .yaml
+  std::string yaml_filename = fs::path(filename).stem().string() + ".yaml";
+  fs::path save_path = output_path / yaml_filename;
+
+  std::ofstream fout(save_path.string());
+  fout << out.c_str();
+  RCLCPP_INFO(this->get_logger(), "Calibration saved to %s", save_path.c_str());
 }
 
 void CameraCalibratorNode::save_visualization(const cv::Mat& image,

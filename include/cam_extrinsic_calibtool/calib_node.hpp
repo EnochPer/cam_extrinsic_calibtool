@@ -51,9 +51,8 @@ class CameraCalibratorNode : public rclcpp::Node {
                  Eigen::Affine3d& T_cam_board);
 
   // Result handling
-  Eigen::Affine3d compute_average_pose(
-      const std::vector<Eigen::Affine3d>& poses);
-  void save_result(const Eigen::Affine3d& T_robot_cam);
+  void save_result(const Eigen::Affine3d& T_robot_cam,
+                   const std::string& filename);
   void save_visualization(const cv::Mat& image, const std::string& filename);
 
   CalibConfig config_;
