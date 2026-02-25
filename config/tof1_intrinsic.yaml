@@ -1,0 +1,21 @@
+%YAML:1.0
+---
+calibration_date: "Wed Jan 28 14:38:34 2026\n"
+image_width: 240
+image_height: 180
+camera_name: camera
+camera_matrix: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [ 1.1526200000000000e+02, 0., 1.2056600000000000e+02, 0.,
+       1.1526200000000000e+02, 9.3991100000000000e+01, 0., 0., 1. ]
+distortion_coefficients: !!opencv-matrix
+   rows: 5
+   cols: 1
+   dt: d
+   data: [ -5.5494000000000000e-02, -2.8160000000000000e-02,
+       8.6000000000000000e-05, -4.2800000000000000e-04,
+       8.7770000000000000e-03 ]
+distortion_model: plumb_bob
+avg_reprojection_error: 2.2954383819886259e-01

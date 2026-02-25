@@ -1,0 +1,18 @@
+# 外参标定配置文件
+
+# 输入数据配置
+image_dir: "/home/zzh/cam_extrinsic_calibtool/images/tof2/jpg"
+pose_file: "/home/zzh/cam_extrinsic_calibtool/src/cam_extrinsic_calibtool/config/pose.txt"
+# 格式: filename x y z roll pitch yaw (空格分隔)
+camera_info_file: "/home/zzh/cam_extrinsic_calibtool/src/cam_extrinsic_calibtool/config/tof1_intrinsic.yaml" # 标准 ROS camera_info 格式
+
+# 棋盘格参数
+board_parameters:
+  cols: 11          # 内角点列数
+  rows: 8           # 内角点行数
+  square_length: 45 # 格子边长 (mm)
+
+# 输出配置
+output_file: "extrinsics_result.yaml"
+step: 1 # 处理步长 (针对文件列表的行数)
+scale_factor: 2.0 # 图像缩放因子 (用于亚分辨率处理)
