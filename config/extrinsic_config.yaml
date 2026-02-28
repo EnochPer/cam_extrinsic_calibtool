@@ -13,10 +13,10 @@ camera_intrinsics:
 data:
   - image: "tof1.jpg"
     camera: "tof1"
-    pose: [500, 225, 100, -90, 0, -90]
+    pose: [500, -225, -25, 90, 0, 90]
   - image: "tof2.jpg"
     camera: "tof2"
-    pose: [-700, -225, 100, -90, 0, 90]
+    pose: [-700, 225, -25, 90, 0, -90]
 
 # 棋盘格参数
 board_parameters:

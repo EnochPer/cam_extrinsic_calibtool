@@ -59,13 +59,15 @@ class CameraCalibratorNode : public rclcpp::Node {
   // Core calculation
   bool detect_corners(const cv::Mat& image, std::vector<cv::Point2f>& corners);
   bool solve_pnp(const std::vector<cv::Point2f>& corners,
-                 const CameraInfo& cam_info, Eigen::Affine3d& T_cam_board);
+                 const CameraInfo& cam_info, Eigen::Affine3d& T_cam_board,
+                 cv::Mat& rvec, cv::Mat& tvec);
 
   // Result handling
   void save_result(const Eigen::Affine3d& T_robot_cam,
                    const std::string& filename);
   void save_visualization(const cv::Mat& image, const std::string& filename,
-                          const CameraInfo& cam_info);
+                          const CameraInfo& cam_info, const cv::Mat& rvec,
+                          const cv::Mat& tvec);
 
   CalibConfig config_;
   std::map<std::string, CameraInfo> cameras_;

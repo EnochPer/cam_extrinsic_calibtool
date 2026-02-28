@@ -1,0 +1,13 @@
+T_robot_cam:
+  translation:
+    x: 76.753205742
+    y: 0.0
+    z: 70.0
+  rotation_matrix:
+    rows: 3
+    cols: 3
+    data: [-0.0, -0.0, 1.0, -1.0, 0.0, 0.0, 0.0, 1.0, 0.0]
+  rotation_euler_rpy_deg:
+    roll: -90.0
+    pitch: -0.0
+    yaw: -90.0

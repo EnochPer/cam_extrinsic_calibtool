@@ -141,9 +141,19 @@ void CameraCalibratorNode::process_data() {
 
     std::vector<cv::Point2f> corners;
     if (detect_corners(image, corners)) {
-      save_visualization(image, filename, cam_info);
       Eigen::Affine3d T_cam_board;
-      if (solve_pnp(corners, cam_info, T_cam_board)) {
+      cv::Mat rvec, tvec;
+      if (solve_pnp(corners, cam_info, T_cam_board, rvec, tvec)) {
+        save_visualization(image, filename, cam_info, rvec, tvec);
+        RCLCPP_INFO(
+            this->get_logger(),
+            "T_cam_board for %s: translation=(%.2f, %.2f, %.2f), "
+            "rotation=(%.2f, %.2f, %.2f)",
+            filename.c_str(), T_cam_board.translation().x(),
+            T_cam_board.translation().y(), T_cam_board.translation().z(),
+            T_cam_board.rotation().eulerAngles(2, 1, 0).x() * 180.0 / M_PI,
+            T_cam_board.rotation().eulerAngles(2, 1, 0).y() * 180.0 / M_PI,
+            T_cam_board.rotation().eulerAngles(2, 1, 0).z() * 180.0 / M_PI);
         // T_robot_cam = T_robot_board * T_cam_board^-1
         Eigen::Affine3d T_robot_cam = T_robot_board * T_cam_board.inverse();
         save_result(T_robot_cam, filename);
@@ -191,6 +201,7 @@ bool CameraCalibratorNode::detect_corners(const cv::Mat& image,
       for (auto& pt : corners) {
         pt.x /= static_cast<float>(config_.scale_factor);
         pt.y /= static_cast<float>(config_.scale_factor);
+        // std::cout << "Refined corner: (" << pt.x << ", " << pt.y << ")\n";
       }
     }
   }
@@ -199,8 +210,8 @@ bool CameraCalibratorNode::detect_corners(const cv::Mat& image,
 
 bool CameraCalibratorNode::solve_pnp(const std::vector<cv::Point2f>& corners,
                                      const CameraInfo& cam_info,
-                                     Eigen::Affine3d& T_cam_board) {
-  cv::Mat rvec, tvec;
+                                     Eigen::Affine3d& T_cam_board,
+                                     cv::Mat& rvec, cv::Mat& tvec) {
   bool success = cv::solvePnP(object_points_, corners, cam_info.camera_matrix,
                               cam_info.dist_coeffs, rvec, tvec);
   if (!success) return false;
@@ -284,7 +295,8 @@ void CameraCalibratorNode::save_result(const Eigen::Affine3d& T_robot_cam,
   }
 
   // Replace extension with .yaml
-  std::string yaml_filename = fs::path(filename).stem().string() + ".yaml";
+  std::string yaml_filename =
+      fs::path(filename).stem().string() + "_extrinsic.yaml";
   fs::path save_path = output_path / yaml_filename;
 
   std::ofstream fout(save_path.string());
@@ -294,7 +306,9 @@ void CameraCalibratorNode::save_result(const Eigen::Affine3d& T_robot_cam,
 
 void CameraCalibratorNode::save_visualization(const cv::Mat& image,
                                               const std::string& filename,
-                                              const CameraInfo& cam_info) {
+                                              const CameraInfo& cam_info,
+                                              const cv::Mat& rvec,
+                                              const cv::Mat& tvec) {
   namespace fs = std::filesystem;
   fs::path output_dir = fs::path(config_.image_dir) / "result";
   if (!fs::exists(output_dir)) {
@@ -327,6 +341,47 @@ void CameraCalibratorNode::save_visualization(const cv::Mat& image,
     cv::drawChessboardCorners(scaled_img,
                               cv::Size(config_.board.cols, config_.board.rows),
                               corners, found);
+
+    // Draw coordinate axes
+    cv::Mat K_new = cam_info.camera_matrix.clone();
+    if (config_.scale_factor > 1.0) {
+      K_new.at<double>(0, 0) *= config_.scale_factor;  // fx
+      K_new.at<double>(1, 1) *= config_.scale_factor;  // fy
+      K_new.at<double>(0, 2) *= config_.scale_factor;  // cx
+      K_new.at<double>(1, 2) *= config_.scale_factor;  // cy
+    }
+
+    // Since we are drawing on an undistorted image, distortion coefficients are
+    // zero
+    cv::Mat dist_coeffs_zero = cv::Mat::zeros(5, 1, CV_64F);
+
+    try {
+      float axis_length = config_.board.square_length * 3;
+      cv::drawFrameAxes(scaled_img, K_new, dist_coeffs_zero, rvec, tvec,
+                        axis_length);
+
+      // Add axis labels
+      std::vector<cv::Point3f> axis_points;
+      axis_points.push_back(cv::Point3f(axis_length, 0, 0));  // X
+      axis_points.push_back(cv::Point3f(0, axis_length, 0));  // Y
+      axis_points.push_back(cv::Point3f(0, 0, axis_length));  // Z
+
+      std::vector<cv::Point2f> image_points;
+      cv::projectPoints(axis_points, rvec, tvec, K_new, dist_coeffs_zero,
+                        image_points);
+
+      // Draw labels
+      cv::putText(scaled_img, "X", image_points[0], cv::FONT_HERSHEY_SIMPLEX,
+                  1.0, cv::Scalar(0, 0, 255), 2);
+      cv::putText(scaled_img, "Y", image_points[1], cv::FONT_HERSHEY_SIMPLEX,
+                  1.0, cv::Scalar(0, 255, 0), 2);
+      cv::putText(scaled_img, "Z", image_points[2], cv::FONT_HERSHEY_SIMPLEX,
+                  1.0, cv::Scalar(255, 0, 0), 2);
+    } catch (const cv::Exception& e) {
+      // Fallback for older OpenCV versions if drawFrameAxes is not available or
+      // fails But drawFrameAxes was introduced in 3.4.1, which is quite old.
+      RCLCPP_WARN(this->get_logger(), "Failed to draw axes: %s", e.what());
+    }
   }
 
   std::string save_path = (output_dir / filename).string();
