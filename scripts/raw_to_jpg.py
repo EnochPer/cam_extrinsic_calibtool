@@ -17,8 +17,8 @@ def convert_bmp_to_jpg(bmp_path, output_dir):
             print(f"[ERROR] Failed to load image: {bmp_path}")
             return False
 
-        # Rotate image 180 degrees
-        image = cv2.rotate(image, cv2.ROTATE_180)
+        # # Rotate image 180 degrees
+        # image = cv2.rotate(image, cv2.ROTATE_180)
 
         # Construct output path
         filename = os.path.basename(bmp_path)
