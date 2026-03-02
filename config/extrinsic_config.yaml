@@ -1,12 +1,12 @@
 # 外参标定配置文件
 
 # 输入数据配置
-image_dir: "/home/zzh/cam_extrinsic_calibtool/images/"
+image_dir: "/root/cam_extrinsic_calibtool/images/"
 
 # 相机内参配置
 camera_intrinsics:
-  tof1: "/home/zzh/cam_extrinsic_calibtool/src/cam_extrinsic_calibtool/config/tof1_intrinsic.yaml"
-  tof2: "/home/zzh/cam_extrinsic_calibtool/src/cam_extrinsic_calibtool/config/tof1_intrinsic.yaml" # 暂时指向同一个，如有不同请修改
+  tof1: "/root/cam_extrinsic_calibtool/src/cam_extrinsic_calibtool/config/tof1_intrinsic.yaml"
+  tof2: "/root/cam_extrinsic_calibtool/src/cam_extrinsic_calibtool/config/tof1_intrinsic.yaml" # 暂时指向同一个，如有不同请修改
 
 # 标定数据列表
 # 格式: image: filename, camera: camera_id, pose: [x, y, z, roll, pitch, yaw]
@@ -25,6 +25,6 @@ board_parameters:
   square_length: 45 # 格子边长 (mm)
 
 # 输出配置
-output_file: "/home/zzh/cam_extrinsic_calibtool/src/cam_extrinsic_calibtool/config/extrinsics_result.yaml"
+output_file: "/root/cam_extrinsic_calibtool/src/cam_extrinsic_calibtool/config/extrinsics_result.yaml"
 step: 1 # 处理步长 (针对文件列表的行数)
 scale_factor: 2.0 # 图像缩放因子 (用于亚分辨率处理)

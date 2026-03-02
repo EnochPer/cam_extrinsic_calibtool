@@ -19,7 +19,7 @@ CameraCalibratorNode::~CameraCalibratorNode() {}
 
 void CameraCalibratorNode::run() {
   const std::string config_path =
-      "/home/zzh/cam_extrinsic_calibtool/src/cam_extrinsic_calibtool/config/"
+      "/root/cam_extrinsic_calibtool/src/cam_extrinsic_calibtool/config/"
       "extrinsic_config.yaml";
   try {
     load_config(config_path);
