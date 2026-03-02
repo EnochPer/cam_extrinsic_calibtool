@@ -50,7 +50,7 @@ while true; do
         exit 1
     fi
 
-    sleep 1 # 每秒检查一次
+    sleep 1
 done
 
 # ================= 替换原脚本 Step 4 =================
@@ -59,7 +59,7 @@ echo "[Step 4] 正在终止 exec.sh (PID: $EXEC_PID)..."
 # 1. 尝试发送 SIGINT (Ctrl+C)
 kill -SIGINT $EXEC_PID 2>/dev/null
 # 等待最多 5 秒让它退出
-for i in {1..5}; do
+for i in {1..3}; do
     if ! kill -0 $EXEC_PID 2>/dev/null; then
         break
     fi
