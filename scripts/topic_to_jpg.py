@@ -91,11 +91,6 @@ class ImageSaverNode(Node):
         self.count_tof1 = 0
         self.count_tof2 = 0
 
-        # Create output directory
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-            self.get_logger().info(f"Created output directory: {output_dir}")
-
         # Subscribe to topics
         self.sub1 = self.create_subscription(
             Image, topic1, lambda msg: self.image_callback(msg, "tof1"), 10)
@@ -177,8 +172,8 @@ class ImageSaverNode(Node):
 def main():
     parser = argparse.ArgumentParser(description="Subscribe to ROS2 topics and save raw images as JPG.")
     
-    default_out = "/root/3dtof_extrinsic_calib/images/output"
-    default_exec = "/root/3dtof_extrinsic_calib/src/cam_extrinsic_calibtool/RawToBmpDemo_240719/build/rawToBmpDemo"
+    default_out = "/root/3dtof_calib/images/output"
+    default_exec = "/root/3dtof_calib/bin/rawToBmpDemo_exec"
 
     parser.add_argument("--topic1", default="/ir_tof1_raw", help="Name of the first image topic (tof1).")
     parser.add_argument("--topic2", default="/ir_tof2_raw", help="Name of the second image topic (tof2).")
@@ -196,6 +191,10 @@ def main():
     if not output_dir:
         print("Error: output_dir is required.")
         return
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        print(f"Created output directory: {output_dir}")
         
     if not os.path.isfile(raw_to_bmp_exec):
         print(f"Error: RawToBmpDemo executable not found at: {raw_to_bmp_exec}")

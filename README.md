@@ -31,11 +31,11 @@ Z轴：向上
 ## 4. 运行
 ```bash
 # 编译
-colcon build --packages-select cam_extrinsic_calibtool
+colcon build --packages-select 3dtof_calib
 source install/setup.bash
 
 # 运行
-ros2 run cam_extrinsic_calibtool calib_node share/cam_extrinsic_calibtool/config/extrinsic_config.yaml
+ros2 run 3dtof_calib calib_node share/3dtof_calib/config/extrinsic_config.yaml
 ```
 
 ## 5. 结果

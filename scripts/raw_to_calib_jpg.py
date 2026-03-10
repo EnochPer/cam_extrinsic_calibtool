@@ -75,8 +75,8 @@ def main():
     parser = argparse.ArgumentParser(description="Convert two specific RAW images to tof1.jpg and tof2.jpg for calibration.")
     parser.add_argument("--input1", default="/root/tof1_image/RAWDATA_10.raw", help="Path to the first .raw file (will be converted to tof1.jpg).")
     parser.add_argument("--input2", default="/root/tof2_image/RAWDATA_10.raw",  help="Path to the second .raw file (will be converted to tof2.jpg).")
-    parser.add_argument("--output", default="/root/cam_extrinsic_calibtool/images/", help="Output directory for .jpg files. Default is ./output")
-    parser.add_argument("--exec", default="/root/cam_extrinsic_calibtool/src/cam_extrinsic_calibtool/RawToBmpDemo_240719/build/rawToBmpDemo", help="Path to the compiled RawToBmpDemo executable.")
+    parser.add_argument("--output", default="/root/3dtof_calib/images/", help="Output directory for .jpg files. Default is ./output")
+    parser.add_argument("--exec", default="/root/3dtof_calib/src/3dtof_calib/RawToBmpDemo_240719/build/rawToBmpDemo", help="Path to the compiled RawToBmpDemo executable.")
 
     args = parser.parse_args()
 

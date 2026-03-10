@@ -36,8 +36,8 @@ def convert_bmp_to_jpg(bmp_path, output_dir):
 
 def main():
     parser = argparse.ArgumentParser(description="Convert BMP images to JPG format.")
-    parser.add_argument("--input", default="/home/zzh/cam_extrinsic_calibtool/images/tof2", help="Input file path or directory containing .bmp files. Default is current directory.")
-    parser.add_argument("--output", default="/home/zzh/cam_extrinsic_calibtool/images/tof2/jpg", help="Output directory for .jpg files. Default is current directory.")
+    parser.add_argument("--input", default="/home/zzh/3dtof_calib/images/tof2", help="Input file path or directory containing .bmp files. Default is current directory.")
+    parser.add_argument("--output", default="/home/zzh/3dtof_calib/images/tof2/jpg", help="Output directory for .jpg files. Default is current directory.")
 
     args = parser.parse_args()
 

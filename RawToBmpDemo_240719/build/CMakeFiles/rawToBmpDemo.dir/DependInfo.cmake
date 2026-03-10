@@ -1,0 +1,19 @@
+
+# Consider dependencies only in project.
+set(CMAKE_DEPENDS_IN_PROJECT_ONLY OFF)
+
+# The set of languages for which implicit dependencies are needed:
+set(CMAKE_DEPENDS_LANGUAGES
+  )
+
+# The set of dependency files which are needed:
+set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/zzh/3dtof_calib/src/3dtof_calib/RawToBmpDemo_240719/RawToBmpDemo.cpp" "CMakeFiles/rawToBmpDemo.dir/RawToBmpDemo.cpp.o" "gcc" "CMakeFiles/rawToBmpDemo.dir/RawToBmpDemo.cpp.o.d"
+  )
+
+# Targets to which this target links.
+set(CMAKE_TARGET_LINKED_INFO_FILES
+  )
+
+# Fortran module output directory.
+set(CMAKE_Fortran_TARGET_MODULE_DIR "")

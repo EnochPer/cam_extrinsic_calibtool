@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace cam_extrinsic_calibtool {
+namespace calib_3dtof {
 
 struct CalibData {
   std::string image_filename;
@@ -74,6 +74,6 @@ class CameraCalibratorNode : public rclcpp::Node {
   std::vector<cv::Point3f> object_points_;  // Defined in board frame
 };
 
-}  // namespace cam_extrinsic_calibtool
+}  // namespace calib_3dtof
 
 #endif
