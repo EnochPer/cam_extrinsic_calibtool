@@ -5,8 +5,8 @@ image_dir: "/root/3dtof_calib/images/"
 
 # 相机内参配置
 camera_intrinsics:
-  tof1: "/root/3dtof_calib/src/3dtof_calib/config/tof1_intrinsic.yaml"
-  tof2: "/root/3dtof_calib/src/3dtof_calib/config/tof2_intrinsic.yaml" # 暂时指向同一个，如有不同请修改
+  tof1: "/root/3dtof_calib/src/3dtof_calib/config/rgb_tof1_intrinsic.yaml"
+  tof2: "/root/3dtof_calib/src/3dtof_calib/config/tof2_intrinsic.yaml" 
 
 # 标定数据列表
 # 格式: image: filename, camera: camera_id, pose: [x, y, z, roll, pitch, yaw]
